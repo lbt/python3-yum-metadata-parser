@@ -518,7 +518,7 @@ log_cb (const gchar *log_domain,
     }
 
     PyTuple_SET_ITEM (args, 0, PyLong_FromLong (level));
-    PyTuple_SET_ITEM (args, 1, PyString_FromString (message));
+    PyTuple_SET_ITEM (args, 1, PyBytes_FromString (message));
 
     result = PyEval_CallObject (callback, args);
     Py_DECREF (args);
@@ -621,13 +621,27 @@ static PyMethodDef SqliteMethods[] = {
     {NULL, NULL, 0, NULL}
 };
 
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "_sqlitecache",
+        NULL,
+        -1, // https://docs.python.org/3/c-api/module.html#c.PyModuleDef
+        SqliteMethods,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+};
+
 PyMODINIT_FUNC
-init_sqlitecache (void)
+PyInit__sqlitecache (void)
 {
     PyObject * m, * d;
 
-    m = Py_InitModule ("_sqlitecache", SqliteMethods);
+    m = PyModule_Create(&moduledef);
 
     d = PyModule_GetDict(m);
     PyDict_SetItemString(d, "DBVERSION", PyLong_FromLong(YUM_SQLITE_CACHE_DBVERSION));
+    return m;
 }
