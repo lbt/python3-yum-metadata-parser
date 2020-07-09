@@ -347,8 +347,8 @@ progress_cb (UpdateInfo *update_info)
     Py_INCREF(repoid);
    
     args = PyTuple_New (3);
-    PyTuple_SET_ITEM (args, 0, PyInt_FromLong (update_info->packages_seen));
-    PyTuple_SET_ITEM (args, 1, PyInt_FromLong (update_info->count_from_md));
+    PyTuple_SET_ITEM (args, 0, PyLong_FromLong (update_info->packages_seen));
+    PyTuple_SET_ITEM (args, 1, PyLong_FromLong (update_info->count_from_md));
     PyTuple_SET_ITEM (args, 2, repoid);
 
     result = PyEval_CallObject (progress, args);
@@ -517,7 +517,7 @@ log_cb (const gchar *log_domain,
         break;
     }
 
-    PyTuple_SET_ITEM (args, 0, PyInt_FromLong (level));
+    PyTuple_SET_ITEM (args, 0, PyLong_FromLong (level));
     PyTuple_SET_ITEM (args, 1, PyString_FromString (message));
 
     result = PyEval_CallObject (callback, args);
@@ -552,7 +552,7 @@ py_update (PyObject *self, PyObject *args, UpdateInfo *update_info)
     g_log_remove_handler (NULL, log_id);
 
     if (db_filename) {
-        ret = PyString_FromString (db_filename);
+        ret = PyBytes_FromString (db_filename);
         g_free (db_filename);
     } else {
         PyErr_SetString (PyExc_TypeError, err->message);
@@ -629,5 +629,5 @@ init_sqlitecache (void)
     m = Py_InitModule ("_sqlitecache", SqliteMethods);
 
     d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "DBVERSION", PyInt_FromLong(YUM_SQLITE_CACHE_DBVERSION));
+    PyDict_SetItemString(d, "DBVERSION", PyLong_FromLong(YUM_SQLITE_CACHE_DBVERSION));
 }
